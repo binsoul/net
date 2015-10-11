@@ -35,5 +35,10 @@
         "test": "phpunit",
         "fix-src": "php-cs-fixer fix -v src",
         "fix-tests": "php-cs-fixer fix -v tests"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        }
     }
 }
