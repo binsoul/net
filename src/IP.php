@@ -3,7 +3,7 @@
 namespace BinSoul\Net;
 
 /**
- * Represents an IP address (IPv4 or IPv6) and provides methods for the most common operations.
+ * Represents an IPv4 or IPv6 address.
  */
 class IP
 {

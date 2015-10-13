@@ -3,7 +3,7 @@
 namespace BinSoul\Net;
 
 /**
- * Represents an URI according to RFC 3986 and provides methods for the most common operations.
+ * Represents an URI according to RFC 3986.
  */
 class URI
 {
