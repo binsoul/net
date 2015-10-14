@@ -128,7 +128,7 @@ class MediaType
 
         $this->type = strtolower($matches['type']);
         $this->subType = strtolower($matches['subtype'].(isset($matches['suffix']) ? $matches['suffix'] : ''));
-        $this->parameters = isset($matches['parameters']) ? substr($matches['parameters'], 1) : '';
+        $this->parameters = isset($matches['parameters']) ? trim(substr($matches['parameters'], 1)) : '';
     }
 
     /**
@@ -138,7 +138,7 @@ class MediaType
      */
     public function __toString()
     {
-        return $this->type.'/'.$this->subType.($this->parameters != '' ? ';'.$this->parameters : '');
+        return $this->type.'/'.$this->subType.($this->parameters != '' ? '; '.$this->parameters : '');
     }
 
     /**
@@ -289,6 +289,9 @@ class MediaType
                 return self::fromExtension($extension);
             }
         }
+
+        $result = str_replace(['charset=binary', 'charset=us-ascii'], ['', ''], strtolower($result));
+        $result = rtrim($result, '; ');
 
         return new self($result);
     }
