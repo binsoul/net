@@ -2,10 +2,12 @@
 
 namespace BinSoul\Net;
 
+use BinSoul\Common\Equatable;
+
 /**
  * Represents an URI according to RFC 3986.
  */
-class URI
+class URI implements Equatable
 {
     /** Unreserved characters */
     const UNRESERVED = '0-9a-zA-Z-\._~';
@@ -368,6 +370,21 @@ class URI
         $result->fragment = $this->filterFragment($fragment);
 
         return $result;
+    }
+
+
+    public function getHash()
+    {
+        return md5((string) $this);
+    }
+
+    public function isEqualTo(Equatable $other)
+    {
+        if (!($other instanceof self)) {
+            return false;
+        }
+
+        return (string) $this == (string) $other;
     }
 
     /**

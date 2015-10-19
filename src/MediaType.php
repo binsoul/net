@@ -2,10 +2,12 @@
 
 namespace BinSoul\Net;
 
+use BinSoul\Common\Equatable;
+
 /**
  * Represents a media type according to RFC 6838.
  */
-class MediaType
+class MediaType implements Equatable
 {
     /** restricted name characters */
     const NAME = '[a-z0-9][a-z0-9\!\#\$\&\-\^\_\.]*';
@@ -294,5 +296,19 @@ class MediaType
         $result = rtrim($result, '; ');
 
         return new self($result);
+    }
+
+    public function getHash()
+    {
+        return md5((string) $this);
+    }
+
+    public function isEqualTo(Equatable $other)
+    {
+        if (!($other instanceof self)) {
+            return false;
+        }
+
+        return (string) $this == (string) $other;
     }
 }

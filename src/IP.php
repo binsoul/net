@@ -2,10 +2,12 @@
 
 namespace BinSoul\Net;
 
+use BinSoul\Common\Equatable;
+
 /**
  * Represents an IPv4 or IPv6 address.
  */
-class IP
+class IP implements Equatable
 {
     /** @var string */
     private $address;
@@ -125,18 +127,6 @@ class IP
     }
 
     /**
-     * Compares the given IP to this IP address.
-     *
-     * @param IP $ip
-     *
-     * @return bool
-     */
-    public function equals(IP $ip)
-    {
-        return (string) $this->expand() == (string) $ip->expand();
-    }
-
-    /**
      * Checks whether this IP is in the given range or not.
      *
      * Matches:
@@ -201,11 +191,25 @@ class IP
             try {
                 $targetIP = new self($targetRange);
 
-                return $this->equals($targetIP);
+                return $this->isEqualTo($targetIP);
             } catch (\InvalidArgumentException $e) {
                 throw new \InvalidArgumentException(sprintf('Invalid range "%s" given.', $range));
             }
         }
+    }
+
+    public function getHash()
+    {
+        return md5((string) $this->expand());
+    }
+
+    public function isEqualTo(Equatable $other)
+    {
+        if (!($other instanceof self)) {
+            return false;
+        }
+
+        return (string) $this->expand() == (string) $other->expand();
     }
 
     /**

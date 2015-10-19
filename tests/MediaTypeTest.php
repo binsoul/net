@@ -29,7 +29,7 @@ class MediaTypeTest extends \PHPUnit_Framework_TestCase
             ['image/svg+xml'],
             ['image/tiff'],
             ['application/x-tar'],
-            ['text/plain;charset=utf-8'],
+            ['text/plain; charset=utf-8'],
             ['text/x-vcalendar'],
             ['text/x-vcard'],
             ['audio/x-wav'],
