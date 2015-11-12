@@ -2,7 +2,7 @@
     "name": "binsoul/net",
     "description": "Common network related classes",
     "keywords": [
-        "net"
+        "network"
     ],
     "homepage": "https://github.com/binsoul/net",
     "license": "MIT",
@@ -34,8 +34,10 @@
     },
     "scripts": {
         "test": "phpunit",
-        "fix-src": "php-cs-fixer fix -v src",
-        "fix-tests": "php-cs-fixer fix -v tests"
+        "fix-style": [
+            "php-cs-fixer fix src",
+            "php-cs-fixer fix tests"
+        ]
     },
     "extra": {
         "branch-alias": {
