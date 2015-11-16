@@ -372,7 +372,6 @@ class URI implements Equatable
         return $result;
     }
 
-
     public function getHash()
     {
         return md5((string) $this);
