@@ -1,5 +1,7 @@
 <?php
 
+declare (strict_types = 1);
+
 namespace BinSoul\Net;
 
 use BinSoul\Common\Equatable;
@@ -21,7 +23,7 @@ class IP implements Equatable
      *
      * @throws \InvalidArgumentException
      */
-    public function __construct($ip)
+    public function __construct(string $ip)
     {
         if (!self::isValid($ip)) {
             throw new \InvalidArgumentException(sprintf('"%s" is not a valid IP address.', $ip));
@@ -38,7 +40,7 @@ class IP implements Equatable
      *
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->address;
     }
@@ -50,9 +52,9 @@ class IP implements Equatable
      *
      * @return bool
      */
-    public static function isValid($ip)
+    public static function isValid(string $ip): bool
     {
-        return filter_var($ip, FILTER_VALIDATE_IP);
+        return filter_var($ip, FILTER_VALIDATE_IP) !== false;
     }
 
     /**
@@ -63,9 +65,9 @@ class IP implements Equatable
      *
      * 2001::1 becomes 2001:0000:0000:0000:0000:0000:0000:0001
      *
-     * @return static
+     * @return IP
      */
-    public function expand()
+    public function expand(): IP
     {
         $result = clone $this;
 
@@ -93,9 +95,9 @@ class IP implements Equatable
      *
      * 2001:0000:0000:0000:0000:0000:0000:0001 becomes 2001::1
      *
-     * @return static
+     * @return IP
      */
-    public function compact()
+    public function compact(): IP
     {
         $result = clone $this;
 
@@ -111,7 +113,7 @@ class IP implements Equatable
      *
      * @return bool
      */
-    public function isPrivate()
+    public function isPrivate(): bool
     {
         if ($this->isLoopback()) {
             return true;
@@ -141,7 +143,7 @@ class IP implements Equatable
      *
      * @return bool
      */
-    public function isInRange($range)
+    public function isInRange(string $range): bool
     {
         $targetRange = strtolower($range);
         $myIP = bin2hex(inet_pton($this->address));
@@ -198,12 +200,18 @@ class IP implements Equatable
         }
     }
 
-    public function getHash()
+    /**
+     * {@inheritdoc}
+     */
+    public function getHash(): string
     {
         return md5((string) $this->expand());
     }
 
-    public function isEqualTo(Equatable $other)
+    /**
+     * {@inheritdoc}
+     */
+    public function isEqualTo(Equatable $other): bool
     {
         if (!($other instanceof self)) {
             return false;
@@ -217,7 +225,7 @@ class IP implements Equatable
      *
      * @return bool
      */
-    private function isLoopback()
+    private function isLoopback(): bool
     {
         if ($this->isIPv6) {
             return $this->compact()->address == '::1';

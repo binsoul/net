@@ -1,5 +1,7 @@
 <?php
 
+declare (strict_types = 1);
+
 namespace BinSoul\Net;
 
 use BinSoul\Common\Equatable;
@@ -51,18 +53,18 @@ class URI implements Equatable
      * @param int|null $port
      */
     public function __construct(
-        $scheme = '',
-        $host = '',
-        $path = '',
-        $query = '',
-        $fragment = '',
-        $user = '',
-        $password = '',
+        string $scheme = '',
+        string $host = '',
+        string $path = '',
+        string $query = '',
+        string $fragment = '',
+        string $user = '',
+        string $password = '',
         $port = null
     ) {
         $this->scheme = $scheme != '' ? $this->filterScheme($scheme) : '';
         $this->host = $host != '' ? $this->filterHost($host) : '';
-        $this->port = $port > 0 ? $this->filterPort($port) : null;
+        $this->port = $port !== null ? $this->filterPort($port) : null;
         $this->path = $path != '' ? $this->filterPath($path) : '';
         $this->query = $query != '' ? $this->filterQuery($query) : '';
         $this->fragment = $fragment != '' ? $this->filterFragment($fragment) : '';
@@ -78,15 +80,15 @@ class URI implements Equatable
      *
      * @param string $uri
      *
-     * @return static
+     * @return URI
      */
-    public static function parse($uri)
+    public static function parse(string $uri): URI
     {
         if ($uri == '') {
             return new static();
         }
 
-        $parts = parse_url((string) $uri);
+        $parts = parse_url($uri);
         if ($parts === false) {
             throw new \InvalidArgumentException(sprintf('Cannot parse malformed uri "%s".', $uri));
         }
@@ -127,7 +129,7 @@ class URI implements Equatable
     /**
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         $uri = '';
 
@@ -164,7 +166,7 @@ class URI implements Equatable
      *
      * @return string
      */
-    public function getScheme()
+    public function getScheme(): string
     {
         return $this->scheme;
     }
@@ -180,7 +182,7 @@ class URI implements Equatable
      *
      * @return string
      */
-    public function getAuthority()
+    public function getAuthority(): string
     {
         if ($this->host == '') {
             return '';
@@ -191,7 +193,7 @@ class URI implements Equatable
             $authority = $this->user.'@'.$authority;
         }
 
-        if ($this->port != '' && !$this->isDefaultPort($this->scheme, $this->port)) {
+        if ($this->port !== null && !$this->isDefaultPort($this->scheme, $this->port)) {
             $authority .= ':'.$this->port;
         }
 
@@ -209,7 +211,7 @@ class URI implements Equatable
      *
      * @return string
      */
-    public function getUserInfo()
+    public function getUserInfo(): string
     {
         return $this->user;
     }
@@ -219,7 +221,7 @@ class URI implements Equatable
      *
      * @return string
      */
-    public function getHost()
+    public function getHost(): string
     {
         return $this->host;
     }
@@ -233,7 +235,7 @@ class URI implements Equatable
      */
     public function getPort()
     {
-        return $this->isDefaultPort($this->scheme, $this->port) ? null : $this->port;
+        return $this->port === null || $this->isDefaultPort($this->scheme, $this->port) ? null : $this->port;
     }
 
     /**
@@ -241,7 +243,7 @@ class URI implements Equatable
      *
      * @return string
      */
-    public function getPath()
+    public function getPath(): string
     {
         return $this->path;
     }
@@ -251,7 +253,7 @@ class URI implements Equatable
      *
      * @return string
      */
-    public function getQuery()
+    public function getQuery(): string
     {
         return $this->query;
     }
@@ -261,7 +263,7 @@ class URI implements Equatable
      *
      * @return string
      */
-    public function getFragment()
+    public function getFragment(): string
     {
         return $this->fragment;
     }
@@ -271,9 +273,9 @@ class URI implements Equatable
      *
      * @param string $scheme
      *
-     * @return string
+     * @return URI
      */
-    public function withScheme($scheme)
+    public function withScheme(string $scheme): URI
     {
         $result = clone $this;
         $result->scheme = $this->filterScheme($scheme);
@@ -284,15 +286,15 @@ class URI implements Equatable
     /**
      * Returns a new instance with the specified username and password.
      *
-     * @param string $username
-     * @param string $password
+     * @param string      $username
+     * @param string|null $password
      *
-     * @return string
+     * @return URI
      */
-    public function withUserInfo($username, $password = null)
+    public function withUserInfo(string $username, $password = null): URI
     {
         $result = clone $this;
-        $result->user = (string) $username.((string) $password != '' ? ':'.(string) $password : '');
+        $result->user = $username.((string) $password != '' ? ':'.(string) $password : '');
 
         return $result;
     }
@@ -302,9 +304,9 @@ class URI implements Equatable
      *
      * @param string $host
      *
-     * @return string
+     * @return URI
      */
-    public function withHost($host)
+    public function withHost(string $host): URI
     {
         $result = clone $this;
         $result->host = $this->filterHost($host);
@@ -317,9 +319,9 @@ class URI implements Equatable
      *
      * @param int|null $port
      *
-     * @return string
+     * @return URI
      */
-    public function withPort($port)
+    public function withPort($port): URI
     {
         $result = clone $this;
         $result->port = $this->filterPort($port);
@@ -332,9 +334,9 @@ class URI implements Equatable
      *
      * @param string $path
      *
-     * @return string
+     * @return URI
      */
-    public function withPath($path)
+    public function withPath(string $path): URI
     {
         $result = clone $this;
         $result->path = $this->filterPath($path);
@@ -347,9 +349,9 @@ class URI implements Equatable
      *
      * @param string $query
      *
-     * @return string
+     * @return URI
      */
-    public function withQuery($query)
+    public function withQuery(string $query): URI
     {
         $result = clone $this;
         $result->query = $this->filterQuery($query);
@@ -362,9 +364,9 @@ class URI implements Equatable
      *
      * @param string $fragment
      *
-     * @return string
+     * @return URI
      */
-    public function withFragment($fragment)
+    public function withFragment(string $fragment): URI
     {
         $result = clone $this;
         $result->fragment = $this->filterFragment($fragment);
@@ -372,12 +374,18 @@ class URI implements Equatable
         return $result;
     }
 
-    public function getHash()
+    /**
+     * {@inheritdoc}
+     */
+    public function getHash(): string
     {
         return md5((string) $this);
     }
 
-    public function isEqualTo(Equatable $other)
+    /**
+     * {@inheritdoc}
+     */
+    public function isEqualTo(Equatable $other): bool
     {
         if (!($other instanceof self)) {
             return false;
@@ -394,7 +402,7 @@ class URI implements Equatable
      *
      * @return bool
      */
-    private function isDefaultPort($scheme, $port)
+    private function isDefaultPort(string $scheme, int $port): bool
     {
         return isset(self::$knownPorts[$scheme]) && self::$knownPorts[$scheme] == $port;
     }
@@ -406,9 +414,9 @@ class URI implements Equatable
      *
      * @return string
      */
-    private function filterScheme($scheme)
+    private function filterScheme(string $scheme): string
     {
-        $result = strtolower((string) $scheme);
+        $result = strtolower($scheme);
         if (isset(self::$knownPorts[$result])) {
             return $result;
         }
@@ -428,14 +436,14 @@ class URI implements Equatable
      *
      * @return string
      */
-    private function filterHost($host)
+    private function filterHost(string $host): string
     {
         return preg_replace_callback(
             '/(?:[^'.self::UNRESERVED.self::SUB_DELIMS.':%\[\]]+|%(?![A-Fa-f0-9]{2}))/',
             function (array $match) {
                 return rawurlencode($match[0]);
             },
-            (string) $host
+            $host
         );
     }
 
@@ -452,7 +460,7 @@ class URI implements Equatable
             return $port;
         }
 
-        if (!preg_match('#^[0-9]+$#', $port)) {
+        if (!preg_match('#^[0-9]+$#', (string) $port)) {
             throw new \InvalidArgumentException(sprintf('Invalid port "%s".', $port));
         }
 
@@ -466,7 +474,7 @@ class URI implements Equatable
      *
      * @return string
      */
-    private function filterPath($path)
+    private function filterPath(string $path): string
     {
         if ($path == '') {
             return $path;
@@ -477,7 +485,7 @@ class URI implements Equatable
             function (array $match) {
                 return rawurlencode($match[0]);
             },
-            (string) $path
+            $path
         );
 
         if ($result[0] != '/') {
@@ -494,7 +502,7 @@ class URI implements Equatable
      *
      * @return string
      */
-    private function filterQuery($query)
+    private function filterQuery(string $query): string
     {
         if (trim($query) == '') {
             return '';
@@ -528,7 +536,7 @@ class URI implements Equatable
      *
      * @return string
      */
-    private function filterFragment($fragment)
+    private function filterFragment(string $fragment): string
     {
         if (trim($fragment) == '') {
             return '';
@@ -554,7 +562,7 @@ class URI implements Equatable
      *
      * @return string
      */
-    private function encodeQuery($value)
+    private function encodeQuery(string $value): string
     {
         return preg_replace_callback(
             '/(?:[^'.self::UNRESERVED.self::SUB_DELIMS.':@%~\/\[\]\?]+|%(?![A-Fa-f0-9]{2}))/',

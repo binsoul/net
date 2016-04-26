@@ -1,5 +1,7 @@
 <?php
 
+declare (strict_types = 1);
+
 namespace BinSoul\Net;
 
 use BinSoul\Common\Equatable;
@@ -122,7 +124,7 @@ class MediaType implements Equatable
      *
      * @throws \InvalidArgumentException
      */
-    public function __construct($mediaType)
+    public function __construct(string $mediaType)
     {
         if (!preg_match(self::REGEX, trim($mediaType), $matches)) {
             throw new \InvalidArgumentException(sprintf('"%s" is not a valid media type.', $mediaType));
@@ -138,7 +140,7 @@ class MediaType implements Equatable
      *
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->type.'/'.$this->subType.($this->parameters != '' ? '; '.$this->parameters : '');
     }
@@ -150,7 +152,7 @@ class MediaType implements Equatable
      *
      * @return bool
      */
-    public static function isValid($mediaType)
+    public static function isValid(string $mediaType): bool
     {
         return (bool) preg_match(self::REGEX, trim($mediaType));
     }
@@ -162,7 +164,7 @@ class MediaType implements Equatable
      *
      * @return bool
      */
-    public static function isKnownExtension($extension)
+    public static function isKnownExtension(string $extension): bool
     {
         return isset(self::$knownTypes[strtolower($extension)]);
     }
@@ -176,7 +178,7 @@ class MediaType implements Equatable
      *
      * @return MediaType
      */
-    public static function fromExtension($extension)
+    public static function fromExtension(string $extension): MediaType
     {
         if (!self::isKnownExtension($extension)) {
             throw new \InvalidArgumentException(sprintf('Unknown extension "%s" given.', $extension));
@@ -192,7 +194,7 @@ class MediaType implements Equatable
      *
      * @return bool
      */
-    private static function isFallback($mediaType)
+    private static function isFallback(string $mediaType): bool
     {
         return strpos($mediaType, 'application/octet-stream') !== false || strpos($mediaType, 'text/plain') !== false;
     }
@@ -204,7 +206,7 @@ class MediaType implements Equatable
      *
      * @return bool
      */
-    private static function isCommandAvailable($command)
+    private static function isCommandAvailable(string $command): bool
     {
         if (!is_callable('shell_exec') || stripos(ini_get('disable_functions'), 'shell_exec') !== false) {
             return false;
@@ -225,7 +227,7 @@ class MediaType implements Equatable
      *
      * @return string
      */
-    private static function guessFromFileCommand($filename)
+    private static function guessFromFileCommand(string $filename): string
     {
         $result = 'application/octet-stream';
 
@@ -245,7 +247,7 @@ class MediaType implements Equatable
      *
      * @return string
      */
-    private static function guessFromFinfo($filename)
+    private static function guessFromFinfo(string $filename): string
     {
         $result = 'application/octet-stream';
 
@@ -270,9 +272,9 @@ class MediaType implements Equatable
      * @param string $filename
      * @param bool   $allowGuessByExtension
      *
-     * @return string
+     * @return MediaType
      */
-    public static function fromFile($filename, $allowGuessByExtension)
+    public static function fromFile(string $filename, bool $allowGuessByExtension): MediaType
     {
         $result = 'application/octet-stream';
 
@@ -298,12 +300,18 @@ class MediaType implements Equatable
         return new self($result);
     }
 
-    public function getHash()
+    /**
+     * {@inheritdoc}
+     */
+    public function getHash(): string
     {
         return md5((string) $this);
     }
 
-    public function isEqualTo(Equatable $other)
+    /**
+     * {@inheritdoc}
+     */
+    public function isEqualTo(Equatable $other): bool
     {
         if (!($other instanceof self)) {
             return false;
