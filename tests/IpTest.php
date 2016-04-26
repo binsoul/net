@@ -2,6 +2,7 @@
 
 namespace BinSoul\Test\Net;
 
+use BinSoul\Common\Equatable;
 use BinSoul\Net\IP;
 
 class IpTest extends \PHPUnit_Framework_TestCase
@@ -154,5 +155,38 @@ class IpTest extends \PHPUnit_Framework_TestCase
     public function test_ip_is_public($ip)
     {
         $this->assertFalse((new IP($ip))->isPrivate(), $ip);
+    }
+
+    /**
+     * @dataProvider privateIP
+     */
+    public function test_is_hashable($ip)
+    {
+        $this->assertEquals((new IP($ip))->getHash(), (new IP($ip))->getHash(), $ip);
+        $this->assertNotEquals((new IP('1.2.3.4'))->getHash(), (new IP($ip))->getHash(), $ip);
+    }
+
+    public function test_hashes_expanded_ips()
+    {
+        $compact = new IP('2001::1');
+
+        $this->assertEquals($compact->getHash(), $compact->expand()->getHash());
+    }
+
+    /**
+     * @dataProvider privateIP
+     */
+    public function test_is_equatable($ip)
+    {
+        $this->assertTrue((new IP($ip))->isEqualTo(new IP($ip)), $ip);
+        $this->assertFalse((new IP('1.2.3.4'))->isEqualTo(new IP($ip)), $ip);
+        $this->assertFalse((new IP($ip))->isEqualTo($this->getMock(Equatable::class)), $ip);
+    }
+
+    public function test_equates_expanded_ips()
+    {
+        $compact = new IP('2001::1');
+
+        $this->assertTrue($compact->isEqualTo($compact->expand()));
     }
 }

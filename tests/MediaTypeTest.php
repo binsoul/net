@@ -2,6 +2,7 @@
 
 namespace BinSoul\Test\Net;
 
+use BinSoul\Common\Equatable;
 use BinSoul\Net\MediaType;
 
 class MediaTypeTest extends \PHPUnit_Framework_TestCase
@@ -126,5 +127,30 @@ class MediaTypeTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf(MediaType::class, MediaType::fromFile($this->tempFile, true));
 
         $this->assertInstanceOf(MediaType::class, MediaType::fromFile('php://memory', true));
+    }
+
+    public function test_is_hashable()
+    {
+        $type1 = new MediaType('text/plain; charset=utf-8');
+        $type2 = new MediaType('application/xhtml+xml');
+
+        $this->assertEquals($type1->getHash(), $type1->getHash());
+        $this->assertEquals($type2->getHash(), $type2->getHash());
+        $this->assertNotEquals($type1->getHash(), $type2->getHash());
+    }
+
+    public function test_is_equatable()
+    {
+        $type1a = new MediaType('text/plain; charset=utf-8');
+        $type1b = new MediaType('text/plain; charset=utf-8');
+        $type2a = new MediaType('application/xhtml+xml');
+        $type2b = new MediaType('application/xhtml+xml');
+
+        $this->assertTrue($type1a->isEqualTo($type1b));
+        $this->assertTrue($type2a->isEqualTo($type2b));
+        $this->assertFalse($type1a->isEqualTo($type2a));
+        $this->assertFalse($type1b->isEqualTo($type2b));
+
+        $this->assertFalse($type1a->isEqualTo($this->getMock(Equatable::class)));
     }
 }

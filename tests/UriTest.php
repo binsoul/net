@@ -2,6 +2,7 @@
 
 namespace BinSoul\Test\Net;
 
+use BinSoul\Common\Equatable;
 use BinSoul\Net\URI;
 
 class UriTest extends \PHPUnit_Framework_TestCase
@@ -413,5 +414,30 @@ class UriTest extends \PHPUnit_Framework_TestCase
     {
         $uri = new URI($scheme, 'example.com', '', '', '', '', '', $port);
         $this->assertEquals('example.com', $uri->getAuthority());
+    }
+
+    public function test_is_hashable()
+    {
+        $uri1 = URI::parse('http://example.com');
+        $uri2 = URI::parse('mailto:foo@example.com');
+
+        $this->assertEquals($uri1->getHash(), $uri1->getHash());
+        $this->assertEquals($uri2->getHash(), $uri2->getHash());
+        $this->assertNotEquals($uri1->getHash(), $uri2->getHash());
+    }
+
+    public function test_is_equatable()
+    {
+        $uri1a = URI::parse('http://example.com');
+        $uri1b = URI::parse('http://example.com');
+        $uri2a = URI::parse('mailto:foo@example.com');
+        $uri2b = URI::parse('mailto:foo@example.com');
+
+        $this->assertTrue($uri1a->isEqualTo($uri1b));
+        $this->assertTrue($uri2a->isEqualTo($uri2b));
+        $this->assertFalse($uri1a->isEqualTo($uri2a));
+        $this->assertFalse($uri1b->isEqualTo($uri2b));
+
+        $this->assertFalse($uri1a->isEqualTo($this->getMock(Equatable::class)));
     }
 }

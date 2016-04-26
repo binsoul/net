@@ -155,7 +155,7 @@ class IP implements Equatable
             $firstIP = bin2hex(inet_pton(trim($parts[0])));
             $lastIP = bin2hex(inet_pton(trim($parts[1])));
 
-            return ($myIP >= $firstIP && $myIP <= $lastIP);
+            return $myIP >= $firstIP && $myIP <= $lastIP;
         } elseif (strpos($targetRange, '/') !== false) {
             $parts = explode('/', $targetRange);
             if (count($parts) > 2) {
@@ -186,7 +186,7 @@ class IP implements Equatable
                 $pos -= 1;
             }
 
-            return ($myIP >= $firstIP && $myIP <= $lastIP);
+            return $myIP >= $firstIP && $myIP <= $lastIP;
         } else {
             try {
                 $targetIP = new self($targetRange);
